@@ -186,40 +186,6 @@ if ($result && $result->num_rows > 0) {
             </table>
         </section>
 
-        <section class="card-section">
-            <h2 class="section-title">Personnels</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Email</th>
-                        <th>Profil</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $query = "SELECT * FROM users";
-                    $result = $conn->query($query);
-
-                    if ($result && $result->num_rows > 0) {
-                        while ($personnel = $result->fetch_assoc()) {
-                            echo '<tr>';
-                            echo '<td>' . htmlspecialchars($personnel['id']) . '</td>';
-                            echo '<td>' . htmlspecialchars($personnel['nom']) . '</td>';
-                            echo '<td>' . htmlspecialchars($personnel['prenom']) . '</td>';
-                            echo '<td>' . htmlspecialchars($personnel['email']) . '</td>';
-                            echo '<td>' . htmlspecialchars($personnel['type']) . '</td>';
-                            echo '</tr>';
-                        }
-                    } else {
-                        echo '<tr><td colspan="5" style="text-align:center; font-weight:600; padding: 20px;">Aucun personnel trouvé.</td></tr>';
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </section>
 
     </div>
 

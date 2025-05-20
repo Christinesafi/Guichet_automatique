@@ -111,12 +111,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="mb-3">
                 <label class="form-label">Profil :</label><br>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="type" id="professeur" value="Client" required>
-                    <label class="form-check-label" for="Client">Client</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="type" id="Technicien" value="Admin" required>
-                    <label class="form-check-label" for="Admin">Admin</label>
+                    <input class="form-check-input" type="radio" name="type" id="professeur" checked value="utilisateur" required>
+                    <label class="form-check-label" for="Client">Utilisateur simple</label>
                 </div>
             </div>
 

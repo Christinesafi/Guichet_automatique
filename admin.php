@@ -10,9 +10,16 @@ $usersQuery = "
     SELECT u.id, u.nom, u.email, u.statut_compte, cb.solde
     FROM users u
     LEFT JOIN comptebancaire cb ON cb.clientId = u.id
-    WHERE u.type = 'client'
+    WHERE u.type != 'Admin'
 ";
 $usersResult = $conn->query($usersQuery);
+$usersQuery = "
+    SELECT u.id, u.nom, u.email,u.type, u.statut_compte, cb.solde
+    FROM users u
+    LEFT JOIN comptebancaire cb ON cb.clientId = u.id
+    WHERE u.type = 'Admin'
+";
+$AmisResult = $conn->query($usersQuery);
 
 $activitiesQuery = "
     SELECT h.*, 
@@ -89,6 +96,16 @@ function tempsRelatif($datetime) {
         <i class="bi bi-trash me-2"></i> Consulter la corbeille
       </button>
       </a>
+      <a class="nav-link" href="corbeiller.php">
+      <button class="btn btn-primary">
+        <i class="bi bi-trash me-2"></i> Ajouter une Guichet
+      </button>
+      </a>
+      <a class="nav-link" href="corbeiller.php">
+      <button class="btn btn-primary">
+        <i class="bi bi-trash me-2"></i> Ajouter un compte
+      </button>
+      </a>
     </div>
 
     <!-- Table Utilisateurs -->
@@ -107,34 +124,78 @@ function tempsRelatif($datetime) {
           </thead>
           <tbody id="userTable">
            <?php while ($row = $usersResult->fetch_assoc()): ?>
-  <tr>
-    <td><?= htmlspecialchars($row['id']) ?></td>
-    <td><?= htmlspecialchars($row['nom']) ?></td>
-    <td><?= htmlspecialchars($row['email']) ?></td>
-    <td><?= number_format($row['solde'], 2, ',', ' ') ?></td>
-    <td>
-      <?php if ($row['statut_compte'] == 'actif'): ?>
-        <span class="badge bg-success">Actif</span>
-      <?php else: ?>
-        <span class="badge bg-secondary">Inactif</span>
-      <?php endif; ?>
-    </td>
-    <td>
-      <a href="modifier.php?id=<?= urlencode($row['id']) ?>" class="btn btn-sm btn-outline-warning me-1" title="Modifier">
-        <i class="bi bi-pencil-square"></i>
-      </a>
-      <a href="supprimer.php?id=<?= urlencode($row['id']) ?>" class="btn btn-sm btn-outline-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-        <i class="bi bi-trash"></i>
-      </a>
-    </td>
-  </tr>
-<?php endwhile; ?>
+            <tr>
+              <td><?= htmlspecialchars($row['id']) ?></td>
+              <td><?= htmlspecialchars($row['nom']) ?></td>
+              <td><?= htmlspecialchars($row['email']) ?></td>
+              <td><?= number_format($row['solde'], 2, ',', ' ') ?></td>
+              <td>
+                <?php if ($row['statut_compte'] == 'actif'): ?>
+                  <span class="badge bg-success">Actif</span>
+                <?php else: ?>
+                  <span class="badge bg-secondary">Inactif</span>
+                <?php endif; ?>
+              </td>
+              <td>
+                <a href="modifier.php?id=<?= urlencode($row['id']) ?>" class="btn btn-sm btn-outline-warning me-1" title="Modifier">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+                <a href="supprimer.php?id=<?= urlencode($row['id']) ?>" class="btn btn-sm btn-outline-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                  <i class="bi bi-trash"></i>
+                </a>
+              </td>
+            </tr>
+              <?php endwhile; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Table Utilisateurs -->
+    <div class="card shadow-sm mb-5">
+      <h2 style="margin:10px"><i class="bi bi-people-fill me-2"></i>Tous les Admins du systeme</h2>
+      <div class="card-body">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Profil</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="userTable">
+           <?php while ($row = $AmisResult->fetch_assoc()): ?>
+            <tr>
+              <td><?= htmlspecialchars($row['id']) ?></td>
+              <td><?= htmlspecialchars($row['nom']) ?></td>
+              <td><?= htmlspecialchars($row['email']) ?></td>
+              <td><?= htmlspecialchars($row['type']) ?></td>
+              <td>
+                <?php if ($row['statut_compte'] == 'actif'): ?>
+                  <span class="badge bg-success">Actif</span>
+                <?php else: ?>
+                  <span class="badge bg-secondary">Inactif</span>
+                <?php endif; ?>
+              </td>
+              <td>
+                <a href="modifier.php?id=<?= urlencode($row['id']) ?>" class="btn btn-sm btn-outline-warning me-1" title="Modifier">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+                <a href="supprimer.php?id=<?= urlencode($row['id']) ?>" class="btn btn-sm btn-outline-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                  <i class="bi bi-trash"></i>
+                </a>
+              </td>
+            </tr>
+              <?php endwhile; ?>
           </tbody>
         </table>
       </div>
     </div>
 
    <!-- Table Historique -->
+    
    <table class="table table-bordered">
     <thead>
         <tr>
@@ -174,6 +235,7 @@ function tempsRelatif($datetime) {
     alert("Formulaire d'ajout d'utilisateur ici...");
   }
 </script>
+
 
 </body>
 </html>
