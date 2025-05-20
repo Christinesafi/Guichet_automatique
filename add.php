@@ -3,6 +3,11 @@ session_start();
 require 'Backend/connexion/conn.php'; 
 $error = "";
 $success = "";
+
+function generateUserId($length = 12) {
+    return substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom']);
     $prenom = trim($_POST['prenom']);
@@ -10,35 +15,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['mot_de_passe']);
     $type = trim($_POST['type']);
     $statut_compte = trim($_POST['statut_compte']);
-      if (empty($nom) || empty($prenom) || empty($email)) {
+
+    if (empty($nom) || empty($prenom) || empty($email)) {
         $error = "Veuillez remplir tous les champs.";
-    }else {
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $query = "INSERT INTO users (email, mot_de_passe, nom, prenom, type,statut_compte) VALUES (?, ?, ?, ?, ?, ?)";
+    } else {
+        $user_id = generateUserId(); // Génère un ID unique aléatoire
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        $query = "INSERT INTO users (user_id, email, mot_de_passe, nom, prenom, type, statut_compte) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("sssssss", $user_id, $email, $hashed_password, $nom, $prenom, $type, $statut_compte);
+
+        if ($stmt->execute()) {
+            $stmt->close();
+
+            $matricule = "MAT" . date("Y") . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+            $statut = "actif";
+
+            $query = "INSERT INTO personnels (id, type, matricule, statut) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($query);
-            $stmt->bind_param("ssssss", $email, $hashed_password, $nom, $prenom, $type,$statut_compte);
+            $stmt->bind_param("ssss", $user_id, $type, $matricule, $statut_compte);
 
             if ($stmt->execute()) {
-                $user_id = $conn->insert_id; 
-                $stmt->close();
-
-                $matricule = "MAT" . date("Y") . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-                $statut = "actif";
-
-                
-                $query = "INSERT INTO personnels (id, type, matricule, statut) VALUES (?, ?, ?, ?)";
-                $stmt = $conn->prepare($query);
-                $stmt->bind_param("isss", $user_id, $type, $matricule, $statut_compte);
-
-                if ($stmt->execute()) {
-                    $success = "Inscription réussie. Vous pouvez maintenant vous connecter.";
-                } else {
-                    $error = "Erreur lors de l'enregistrement dans personnels.";
-                }
+                $success = "Inscription réussie. Vous pouvez maintenant vous connecter.";
+            } else {
+                $error = "Erreur lors de l'enregistrement dans personnels.";
             }
+        } else {
+            $error = "Erreur lors de l'enregistrement dans users.";
+        }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -105,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="role" class="form-label">Rôle</label>
             <select class="form-select" id="role" name="type" required>
               <option value="">-- Sélectionner --</option>
-              <option name="Admin">Administrateur</option>
-              <option value="Client">Client</option>
+              <option name="Admin" value="Admin">Administrateur</option>
+              <option value="Client" value="Client">Client</option>
             </select>
           </div>
           <div class="mb-3 w-100">

@@ -11,13 +11,12 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-$type = $_SESSION['type']; 
+
 if (isset($_GET['restaurer'])) {
     $id = intval($_GET['restaurer']);
     $result = $conn->query("SELECT * FROM corbeille WHERE id = $id");
     if ($row = $result->fetch_assoc()) {
-        if ($type === 'admin' || $row['user_id'] == $user_id) {
-            $table = $row['table_source'];
+        $table = $row['table_source'];
             $data = json_decode($row['donnees'], true);
             $columns = implode(", ", array_keys($data));
             $values = implode("', '", array_map([$conn, 'real_escape_string'], array_values($data)));
@@ -25,35 +24,24 @@ if (isset($_GET['restaurer'])) {
 
             $conn->query("INSERT INTO `$table` (id, $columns) VALUES ($id_original, '$values')");
             $conn->query("DELETE FROM corbeille WHERE id = $id");
-        }
     }
 }
 
-// Supprimer définitivement
 if (isset($_GET['supprimer'])) {
     $id = intval($_GET['supprimer']);
     $result = $conn->query("SELECT * FROM corbeille WHERE id = $id");
     if ($row = $result->fetch_assoc()) {
-        if ($type === 'admin' || $row['user_id'] == $user_id) {
-            $conn->query("DELETE FROM corbeille WHERE id = $id");
-        }
+        $conn->query("DELETE FROM corbeille WHERE id = $id");
     }
 }
 
 if (isset($_GET['vider'])) {
-    if ($type === 'admin') {
-        $conn->query("TRUNCATE TABLE corbeille");
-    } else {
-        $conn->query("DELETE FROM corbeille WHERE user_id = $user_id");
-    }
+    $conn->query("DELETE FROM corbeille ");
 }
+$result = $conn->query("SELECT * FROM corbeille  ORDER BY date_action DESC");
 
-if ($type === 'admin') {
-    $result = $conn->query("SELECT * FROM corbeille ORDER BY date_action DESC");
-} else {
-    $result = $conn->query("SELECT * FROM corbeille WHERE user_id = $user_id ORDER BY date_action DESC");
-}
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -72,16 +60,14 @@ if ($type === 'admin') {
 
 <h1>Corbeille</h1>
 
-<a href="corbeiller.php?vider=1" onclick="return confirm('Vider la corbeille ?');" class="vider">🧹 Vider la corbeille</a>
+<a href="admin.php" class="vider">Retourner à l'accueil</a></br>
+<a href="corbeiller.php?vider=1" onclick="return confirm('Vider la corbeille ?');" class="vider">Vider la corbeille</a>
 
 <?php if ($result && $result->num_rows > 0): ?>
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <?php if ($type === 'admin'): ?>
-                    <th>Utilisateur</th>
-                <?php endif; ?>
                 <th>Table</th>
                 <th>ID Original</th>
                 <th>Données</th>
@@ -94,9 +80,6 @@ if ($type === 'admin') {
         <?php while ($row = $result->fetch_assoc()): ?>
             <tr>
                 <td><?= $row['id'] ?></td>
-                <?php if ($type === 'admin'): ?>
-                    <td><?= $row['user_id'] ?></td>
-                <?php endif; ?>
                 <td><?= htmlspecialchars($row['table_source']) ?></td>
                 <td><?= $row['id_original'] ?></td>
                 <td><pre><?= json_encode(json_decode($row['donnees']), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?></pre></td>

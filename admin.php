@@ -70,6 +70,7 @@ function tempsRelatif($datetime) {
       <li class="nav-item"><a class="nav-link" href="add.php"><i class="bi bi-people-fill me-2"></i>Utilisateurs</a></li>
       <li class="nav-item"><a class="nav-link" href="pages/historique.php"><i class="bi bi-clock-history me-2"></i>Activités</a></li>
       <li class="nav-item"><a class="nav-link" href="Paramètres.php"><i class="bi bi-sliders me-2"></i>Paramètres</a></li>
+      <li class="nav-item"><a class="nav-link" href="corbeiller.php"><i class="bi bi-trash me-2"></i>Consulter la corbeille</a></li>
       <li class="nav-item"><a class="nav-link" href="pages/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a></li>
     </ul>
   </div>
@@ -83,57 +84,9 @@ function tempsRelatif($datetime) {
         <i class="bi bi-person-plus me-1"></i> Ajouter un utilisateur
       </button>
       </a>
-    </div>
-
-    <!-- Table Utilisateurs -->
-    <div class="card shadow-sm mb-5">
-      <div class="card-body">
-        <table class="table table-hover">
-          <thead class="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Nom</th>
-              <th>Email</th>
-              <th>Solde (€)</th>
-              <th>Statut</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="userTable">
-           <?php while ($row = $usersResult->fetch_assoc()): ?>
-  <tr>
-    <td><?= htmlspecialchars($row['id']) ?></td>
-    <td><?= htmlspecialchars($row['nom']) ?></td>
-    <td><?= htmlspecialchars($row['email']) ?></td>
-    <td><?= number_format($row['solde'], 2, ',', ' ') ?></td>
-    <td>
-      <?php if ($row['statut_compte'] == 'actif'): ?>
-        <span class="badge bg-success">Actif</span>
-      <?php else: ?>
-        <span class="badge bg-secondary">Inactif</span>
-      <?php endif; ?>
-    </td>
-    <td>
-      <a href="modifier.php?id=<?= urlencode($row['id']) ?>" class="btn btn-sm btn-outline-warning me-1" title="Modifier">
-        <i class="bi bi-pencil-square"></i>
-      </a>
-      <a href="supprimer.php?id=<?= urlencode($row['id']) ?>" class="btn btn-sm btn-outline-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-        <i class="bi bi-trash"></i>
-      </a>
-    </td>
-  </tr>
-<?php endwhile; ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <!-- liste des comptes -->
-  <div class="container-fluid p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2><i class="bi bi-people-fill me-2"></i>Clients du systeme</h2>
-      <a class="nav-link" href="add.php">
+      <a class="nav-link" href="corbeiller.php">
       <button class="btn btn-primary">
-        <i class="bi bi-person-plus me-1"></i> Ajouter un utilisateur
+        <i class="bi bi-trash me-2"></i> Consulter la corbeille
       </button>
       </a>
     </div>

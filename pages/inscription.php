@@ -5,6 +5,11 @@ require '../Backend/connexion/conn.php';
 $error = "";
 $success = "";
 
+// Fonction pour générer un identifiant aléatoire unique
+function generateUserId($length = 12) {
+    return substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $email = trim($_POST['email']);
@@ -20,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (strlen($password) < 6) {
         $error = "Le mot de passe doit contenir au moins 6 caractères.";
     } else {
-        $query = "SELECT id FROM users WHERE email = ?";
+        $query = "SELECT user_id FROM users WHERE email = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -30,22 +35,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error = "Cet email est déjà utilisé.";
         } else {
             $stmt->close();
+            $user_id = generateUserId(); // Génère un ID aléatoire
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $query = "INSERT INTO users (email, mot_de_passe, nom, prenom, type) VALUES (?, ?, ?, ?, ?)";
+            $query = "INSERT INTO users (user_id, email, mot_de_passe, nom, prenom, type) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($query);
-            $stmt->bind_param("sssss", $email, $hashed_password, $nom, $prenom, $type);
+            $stmt->bind_param("ssssss", $user_id, $email, $hashed_password, $nom, $prenom, $type);
 
             if ($stmt->execute()) {
-                $user_id = $conn->insert_id; 
                 $stmt->close();
 
                 $matricule = "MAT" . date("Y") . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
                 $statut = "actif";
 
-                
                 $query = "INSERT INTO personnels (id, type, matricule, statut) VALUES (?, ?, ?, ?)";
                 $stmt = $conn->prepare($query);
-                $stmt->bind_param("isss", $user_id, $type, $matricule, $statut);
+                $stmt->bind_param("ssss", $user_id, $type, $matricule, $statut);
 
                 if ($stmt->execute()) {
                     $success = "Inscription réussie. Vous pouvez maintenant vous connecter.";
@@ -58,11 +62,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $error = "Une erreur est survenue lors de l'inscription.";
             }
         }
-
-        
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
