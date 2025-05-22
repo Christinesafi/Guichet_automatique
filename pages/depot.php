@@ -15,8 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idCompte = $_POST['idCompte'] ?? null;
     $montant = floatval($_POST['montant'] ?? 0);
     $idGuichet = $_POST['idGuichet'] ?? null;
-
-    // Exemple de limite max de dépôt
     $limiteDepotMax = 10000;
 
     if (!$idCompte || $montant <= 0 || !$idGuichet) {
@@ -24,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($montant > $limiteDepotMax) {
         $error = "Le montant dépasse la limite maximale de dépôt autorisée (".$limiteDepotMax.").";
     } else {
-        // Récupérer solde et statut du compte
         $stmt = $conn->prepare("SELECT solde, statut_compte FROM comptebancaire WHERE idCompte = ? AND clientId = ?");
         $stmt->bind_param("ii", $idCompte, $clientId);
         $stmt->execute();
@@ -120,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <button type="submit" class="btn btn-primary w-100 mb-2">Déposer</button>
-            <a href="home.php"><button type="button" class="btn btn-secondary w-100">Retour</button></a>
+            <a href="../home.php"><button type="button" class="btn btn-secondary w-100">Retour</button></a>
         </form>
     </article>
 </main>

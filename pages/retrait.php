@@ -11,7 +11,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $clientId = $_SESSION['user_id'];
 
-// Définir une limite de retrait max par opération (exemple : 1000)
 $limiteRetrait = 1000;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -22,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$idCompte || $montant <= 0 || !$idGuichet) {
         $error = "Veuillez saisir un montant valide, choisir un compte et un guichet.";
     } else {
-        // Récupérer les infos du compte de vore compte : solde + statut_compte
         $stmt = $conn->prepare("SELECT solde, statut_compte FROM comptebancaire WHERE idCompte = ? AND clientId = ?");
         $stmt->bind_param("ii", $idCompte, $clientId);
         $stmt->execute();
@@ -31,15 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result && $result->num_rows > 0) {
             $compte = $result->fetch_assoc();
 
-            //Madame Safina Vérifier du statut_compte
             if ($compte['statut_compte'] !== 'Activé') {
                 $error = "Le compte sélectionné n'est pas actif. Retrait impossible.";
             }
-            // Vérifier limite de retrait
             elseif ($montant > $limiteRetrait) {
                 $error = "Le montant dépasse la limite de retrait autorisée par opération (max $limiteRetrait).";
             }
-            // Vérifier solde suffisant
             elseif ($compte['solde'] < $montant) {
                 $error = "Solde insuffisant pour ce retrait.";
             }
@@ -127,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <button type="submit" class="btn btn-danger w-100 mb-2">Retirer</button>
-            <a href="home.php"><button type="button" class="btn btn-secondary w-100">Retour</button></a>
+            <a href="../home.php"><button type="button" class="btn btn-secondary w-100">Retour</button></a>
         </form>
     </article>
 </main>

@@ -144,9 +144,6 @@ if ($result && $result->num_rows > 0) {
 
 <body>
     <div class="container">
-
-        <?php include("../includs/header.php"); ?>
-
         <section class="card-section">
             <h2 class="section-title">Guichets en Services</h2>
             <table>

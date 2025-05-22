@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['type'] = $user['type'];
 
-                header("Location: pages/home.php");
+                header("Location: home.php");
                 exit();
             } else {
                 $error = "Mot de passe incorrect.";

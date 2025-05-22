@@ -46,7 +46,7 @@ function selected($value, $current) {
   <div class="container">
     <div class="form-section">
       <h4 class="mb-4 text-secondary">Modifier l'utilisateur</h4>
-      <form action="modifier_utilisateur.php" method="POST">
+      <form  method="POST">
         
         <!-- ID utilisateur caché -->
         <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['id']) ?>">

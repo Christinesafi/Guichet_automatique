@@ -82,33 +82,68 @@ function tempsRelatif($datetime) {
     </ul>
   </div>
 
-  <!-- Main Content -->
   <div class="container-fluid p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2><i class="bi bi-people-fill me-2"></i>Clients du systeme</h2>
-      <a class="nav-link" href="add.php">
-      <button class="btn btn-primary">
-        <i class="bi bi-person-plus me-1"></i> Ajouter un utilisateur
-      </button>
-      </a>
-      <a class="nav-link" href="corbeiller.php">
-      <button class="btn btn-primary">
-        <i class="bi bi-trash me-2"></i> Consulter la corbeille
-      </button>
-      </a>
-      <a class="nav-link" href="corbeiller.php">
-      <button class="btn btn-primary">
-        <i class="bi bi-trash me-2"></i> Ajouter une Guichet
-      </button>
-      </a>
-      <a class="nav-link" href="corbeiller.php">
-      <button class="btn btn-primary">
-        <i class="bi bi-trash me-2"></i> Ajouter un compte
-      </button>
-      </a>
-    </div>
+   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <h2>Clients du système</h2>
 
-    <!-- Table Utilisateurs -->
+  <a class="nav-link" href="add.php">
+    <button class="btn btn-primary">
+      <i class="bi bi-person-plus-fill me-1"></i> Ajouter un utilisateur
+    </button>
+  </a>
+
+  <a class="nav-link" href="corbeiller.php">
+    <button class="btn btn-danger">
+      <i class="bi bi-trash-fill me-1"></i> Consulter la corbeille
+    </button>
+  </a>
+
+  <a class="nav-link" href="addGuichet.php">
+    <button class="btn btn-success">
+      <i class="bi bi-shop-window me-1"></i> Ajouter un guichet
+    </button>
+  </a>
+
+  <a class="nav-link" href="add.php">
+    <button class="btn btn-secondary">
+      <i class="bi bi-wallet2 me-1"></i> Ajouter un compte
+    </button>
+  </a>
+</div>
+
+    
+   <table class="table table-bordered">
+    <h2 style="margin:10px"><i class="bi bi-people-fill me-2"></i>Historique du systeme</h2>
+    <thead>
+        <tr>
+            <th>IdHistorique</th>
+            <th>Date & Heure</th>
+            <th>Type d'Événement</th>
+            <th>Message</th>
+            <th>Guichet</th>
+            <th>Client</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php
+    if ($activitiesResult->num_rows > 0) {
+        while ($row = $activitiesResult->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td data-label='IdHistorique'>" . htmlspecialchars($row['idHistorique']) . "</td>";
+            echo "<td data-label='Date & Heure'>" . htmlspecialchars(tempsRelatif($row['dateHeure'])) . "</td>";
+            echo "<td data-label='Type d\'Événement'>" . htmlspecialchars($row['typeEvenement']) . "</td>";
+            echo "<td data-label='Message'>" . htmlspecialchars($row['message']) . "</td>";
+            echo "<td data-label='Guichet'>" . htmlspecialchars($row['guichet_nom'] ?? 'Inconnu') . "</td>";
+            echo "<td data-label='Client'>" . htmlspecialchars(trim($row['client_nom'] . ' ' . $row['client_prenom'])) . "</td>";
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='6' class='text-center'>Aucune donnée trouvée pour votre historique.</td></tr>";
+    }
+    ?>
+    </tbody>
+</table>
+  
     <div class="card shadow-sm mb-5">
       <div class="card-body">
         <table class="table table-hover">
@@ -150,7 +185,6 @@ function tempsRelatif($datetime) {
         </table>
       </div>
     </div>
-    <!-- Table Utilisateurs -->
     <div class="card shadow-sm mb-5">
       <h2 style="margin:10px"><i class="bi bi-people-fill me-2"></i>Tous les Admins du systeme</h2>
       <div class="card-body">
@@ -193,39 +227,6 @@ function tempsRelatif($datetime) {
         </table>
       </div>
     </div>
-
-   <!-- Table Historique -->
-    
-   <table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>IdHistorique</th>
-            <th>Date & Heure</th>
-            <th>Type d'Événement</th>
-            <th>Message</th>
-            <th>Guichet</th>
-            <th>Client</th>
-        </tr>
-    </thead>
-    <tbody>
-    <?php
-    if ($activitiesResult->num_rows > 0) {
-        while ($row = $activitiesResult->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td data-label='IdHistorique'>" . htmlspecialchars($row['idHistorique']) . "</td>";
-            echo "<td data-label='Date & Heure'>" . htmlspecialchars(tempsRelatif($row['dateHeure'])) . "</td>";
-            echo "<td data-label='Type d\'Événement'>" . htmlspecialchars($row['typeEvenement']) . "</td>";
-            echo "<td data-label='Message'>" . htmlspecialchars($row['message']) . "</td>";
-            echo "<td data-label='Guichet'>" . htmlspecialchars($row['guichet_nom'] ?? 'Inconnu') . "</td>";
-            echo "<td data-label='Client'>" . htmlspecialchars(trim($row['client_nom'] . ' ' . $row['client_prenom'])) . "</td>";
-            echo "</tr>";
-        }
-    } else {
-        echo "<tr><td colspan='6' class='text-center'>Aucune donnée trouvée pour votre historique.</td></tr>";
-    }
-    ?>
-    </tbody>
-</table>
 
   </div>
 </div>

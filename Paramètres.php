@@ -39,7 +39,6 @@ $resultCompte = $stmtCompte->get_result();
 if ($resultCompte->num_rows === 1) {
     $compte = $resultCompte->fetch_assoc();
 } else {
-    // Si pas de compte bancaire, valeurs vides par défaut
     $compte = [
         'limite_retrait' => '',
         'statut_compte' => '',
@@ -47,7 +46,6 @@ if ($resultCompte->num_rows === 1) {
     ];
 }
 
-// Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -55,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $statut_compte = $_POST['statut_compte'] ?? '';
     $devise_utilisee = $_POST['devise_utilisee'] ?? '';
 
-    // Validation simple
     if ($nom === '' || $email === '') {
         $error = "Nom et email sont obligatoires.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -67,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!in_array($devise_utilisee, ['EUR', 'USD', 'BIF', 'XOF'])) {
         $error = "Devise utilisée invalide.";
     } else {
-        // Mise à jour users
         $updateUser = "UPDATE users SET nom = ?, email = ? WHERE id = ?";
         $stmtUpdateUser = $conn->prepare($updateUser);
         if (!$stmtUpdateUser) {
@@ -76,8 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmtUpdateUser->bind_param("ssi", $nom, $email, $user_id);
             $stmtUpdateUser->execute();
             $stmtUpdateUser->close();
-
-            // Mise à jour compte bancaire
             $updateCompte = "UPDATE comptebancaire SET limite_retrait = ?, statut_compte = ?, devise = ? WHERE clientId = ?";
             $stmtUpdateCompte = $conn->prepare($updateCompte);
             if (!$stmtUpdateCompte) {
@@ -86,7 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmtUpdateCompte->bind_param("issi", $limite_retrait, $statut_compte, $devise_utilisee, $user_id);
                 if ($stmtUpdateCompte->execute()) {
                     $success = "Informations mises à jour avec succès.";
-                    // Actualiser les valeurs affichées
                     $user['nom'] = $nom;
                     $user['email'] = $email;
                     $compte['limite_retrait'] = $limite_retrait;
@@ -142,8 +135,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
 
       <form action="" method="POST" novalidate>
-
-        <!-- Infos utilisateur -->
         <div class="mb-3">
           <label for="nom" class="form-label">Nom</label>
           <input
@@ -171,8 +162,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h5 class="text-secondary mt-4 mb-3">Paramètres du compte bancaire</h5>
 
         <div class="d-flex justify-content-start gap-3 mb-4 flex-wrap">
-
-          <!-- Limite de retrait -->
           <div class="mb-3 flex-fill" style="min-width: 220px;">
             <label for="limite_retrait" class="form-label">Limite de retrait quotidienne (€)</label>
             <input
@@ -187,8 +176,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               value="<?= htmlspecialchars($compte['limite_retrait']) ?>"
             >
           </div>
-
-          <!-- Statut du compte -->
           <div class="mb-3 flex-fill" style="min-width: 180px;">
             <label for="statut_compte" class="form-label">Statut du compte</label>
             <select class="form-select" id="statut_compte" name="statut_compte" required>
@@ -202,7 +189,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </select>
           </div>
 
-          <!-- Devise utilisée -->
           <div class="mb-3 flex-fill" style="min-width: 180px;">
             <label for="devise_utilisee" class="form-label">Devise utilisée</label>
             <select class="form-select" id="devise_utilisee" name="devise_utilisee" required>
@@ -224,9 +210,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </div>
 
-        <!-- Boutons -->
         <div class="d-flex gap-2 justify-content-end mt-3">
-          <button type="button" class="btn btn-outline-dark" onclick="window.location.href='pages/home.php'">Retourner</button>
+          <button type="button" class="btn btn-outline-dark" onclick="window.location.href='home.php'">Retourner</button>
           <button type="submit" class="btn btn-primary">Mettre à jour</button>
         </div>
       </form>

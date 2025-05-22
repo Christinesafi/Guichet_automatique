@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 18, 2025 at 07:08 PM
+-- Generation Time: May 22, 2025 at 06:42 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -57,7 +57,24 @@ CREATE TABLE `comptebancaire` (
 
 INSERT INTO `comptebancaire` (`idCompte`, `type`, `solde`, `devise`, `clientId`, `limite_retrait`, `statut_compte`) VALUES
 (1, 'courant', 800, 'USD', 1, '10', 'Activé'),
-(2, 'courant', 100, 'fb', 2, '', '');
+(2, 'courant', 100, 'fb', 2, '', ''),
+(3, 'Épargne', 200, 'CDF', 18, '45', 'Activé');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `corbeille`
+--
+
+CREATE TABLE `corbeille` (
+  `id` int(11) NOT NULL,
+  `user_id` varchar(255) DEFAULT NULL,
+  `table_source` varchar(100) DEFAULT NULL,
+  `id_original` bigint(20) DEFAULT NULL,
+  `donnees` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`donnees`)),
+  `type_action` enum('DELETE','UPDATE') DEFAULT NULL,
+  `date_action` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -109,7 +126,24 @@ INSERT INTO `historique` (`idHistorique`, `dateHeure`, `typeEvenement`, `message
 (6, '2025-05-18 16:54:59', 'Retrait', 'Retrait de 50 effectué du compte 1 via guichet 1.', 1, 1, 1),
 (7, '2025-05-18 16:55:24', 'Retrait', 'Retrait de 50 effectué du compte 1 via guichet 1.', 1, 1, 1),
 (8, '2025-05-18 16:59:07', 'Dépôt', 'Dépôt de 300 effectué sur le compte 1 via guichet 1.', 1, 1, 1),
-(9, '2025-05-18 16:59:22', 'Dépôt', 'Dépôt de 300 effectué sur le compte 1 via guichet 1.', 1, 1, 1);
+(9, '2025-05-18 16:59:22', 'Dépôt', 'Dépôt de 300 effectué sur le compte 1 via guichet 1.', 1, 1, 1),
+(10, '2025-05-22 18:41:45', 'Dépôt', 'Dépôt de 500 effectué sur le compte 3 via guichet 1.', 1, 18, 18),
+(11, '2025-05-22 18:42:00', 'Retrait', 'Retrait de 500 effectué du compte 3 via guichet 1.', 1, 18, 18);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `message`
+--
+
+CREATE TABLE `message` (
+  `id` int(11) NOT NULL,
+  `nom` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `sujet` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `date_envoi` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -138,7 +172,15 @@ INSERT INTO `personnels` (`id`, `type`, `matricule`, `statut`) VALUES
 ('7', 'Administrateur', 0, 'Désactivé'),
 ('8', 'Administrateur', 0, 'Désactivé'),
 ('9', 'Administrateur', 0, 'Activé'),
-('10', 'Client', 0, 'Activé');
+('10', 'Client', 0, 'Activé'),
+('11', 'Administrateur', 0, 'Activé'),
+('12', 'Client', 0, 'Activé'),
+('QOCFXkV9Sv8L', 'Administrateur', 0, 'Activé'),
+('PtC208KRcexL', 'Client', 0, 'Activé'),
+('6WKDvU2u0LH7', 'Client', 0, 'Activé'),
+('0GkzmTurfCLi', 'Client', 0, 'Activé'),
+('SEfTmCD08i3s', 'Admin', 0, 'actif'),
+('FyAiE5K2IUzP', 'Client', 0, 'Activé');
 
 -- --------------------------------------------------------
 
@@ -183,10 +225,64 @@ INSERT INTO `users` (`id`, `user_id`, `nom`, `prenom`, `mot_de_passe`, `email`, 
 (3, '', 'moise', 'kashindi', '$2y$10$Be.LIBUeulFpEQb6mXJvdeMVND/E5e.Ec0Z0avwCaWTb7Uhhbo4S2', 'moise@gmail.com', 'Technicien', '', '', ''),
 (4, '', 'Safi', 'Kibas', '$2y$10$2DE7jRnOKxmv5PiUCvbVjewMYi1xQBadHzStjVm.b284Ba51LeYg6', 'safi@gmail.com', 'Admin', '', '', ''),
 (6, '', 'Jean-luc', 'Shikaneza', '$2y$10$g6/DWqT163nJVjJVs5nMhO02nzdoTgNLU0VYq3WVxCAeiuP1bdpYC', 'luc@gmail.com', 'Administrateur', '', 'Désactivé', ''),
-(7, '', 'Jean-luc', 'Shikaneza', '$2y$10$0yzsiqoAL/A50rMK7LCRoOvLgDTNQxpiE.lz8vh0PKlpJSiS/LhgO', 'kalenga.chance@ecole.com', 'Administrateur', '', 'Désactivé', ''),
+(7, '7', 'Jean-luc', 'Shikaneza', '$2y$10$0yzsiqoAL/A50rMK7LCRoOvLgDTNQxpiE.lz8vh0PKlpJSiS/LhgO', 'kalenga.chance@ecole.com', 'Administrateur', '', 'Désactivé', ''),
 (8, '', 'Jean-luc', 'Shikaneza', '$2y$10$sONJCygekVNxKyEmtA.oxOF/AISJlR4cOtY6skalS1FQ1ekKWELjW', 'kalenga.chance@ecole.com', 'Administrateur', '', 'Désactivé', ''),
-(9, '', 'Jean-luc', 'kashindi', '$2y$10$vMLRYNLfQmpgUEVh2hZeXOkf/uF7wthGIo6UOT1JxuJfqFiegY74C', 'jeanluckashindi812@gmil.com', 'Administrateur', '', 'Activé', ''),
-(10, '', 'Nathalie', 'kashindi', '$2y$10$EVFAxCMT33k4qjvKRxtA1uQ69kft4hz9wnADsMSyWutjNqGE6X2j.', 'nath@gmail.com', 'Client', '', 'Activé', '');
+(9, '', 'Jean-luc', 'kashindi', '$2y$10$vMLRYNLfQmpgUEVh2hZeXOkf/uF7wthGIo6UOT1JxuJfqFiegY74C', 'jeanluckashindi812@gmil.com', 'Admin', '', 'Activé', ''),
+(11, '', 'Nathalie', 'kashindi', '$2y$10$MbPLOvzIP1S0cwadZ794AeDo5WBjsp0dINIFM2kyHQNh17W653YZi', 'nath@gmail.com', 'Admin', '', 'Activé', ''),
+(13, '13', 'David', 'Shikaneza', '$2y$10$xrdsKGB2ROhKmIXZTtQIYuMP5bsqLoMqij1qwk2RfgONrC.H3O5ny', 'jeanluckashindi812@gmil.com', 'Administrateur', '', 'Activé', ''),
+(16, '16', 'moise', 'knewa', '$2y$10$BRITWCkGyKrgfT4wmEiEHeyBx6tYOhVtq.IEeQNj2HCq08bEMF8O.', 'jeanluckashindi812@gmil.com', 'Client', '', 'Activé', ''),
+(17, 'SEfTmCD08i3s', 'Christine', 'Kibas', '$2y$10$Ml6ckEH51w4UcSMOu.vKjOMT.4dsmbEuF0UlfkGi7Ex4b7i8GO2My', 'christine@gmail.com', 'Admin', '', '', ''),
+(18, '18', 'priscilla', 'kapinga', '$2y$10$iWeAuEuWe3UxemfnOaOBq.LIo/XKGQ7Vjd3A0P6540qqJ6GOfYo1e', 'priscilla@gmil.com', 'Client', '', 'Activé', '');
+
+--
+-- Triggers `users`
+--
+DELIMITER $$
+CREATE TRIGGER `before_user_delete` BEFORE DELETE ON `users` FOR EACH ROW BEGIN
+  INSERT INTO corbeille (table_source, id_original, donnees, type_action, user_id)
+  VALUES (
+    'users',
+    OLD.id,
+    JSON_OBJECT(
+      'user_id', OLD.id,
+      'nom', OLD.nom,
+      'prenom', OLD.prenom,
+      'mot_de_passe', OLD.mot_de_passe,
+      'email', OLD.email,
+      'type', OLD.type,
+      'limite_retrait', OLD.limite_retrait,
+      'statut_compte', OLD.statut_compte,
+      'devise_utilisee', OLD.devise_utilisee
+    ),
+    'DELETE',
+    @user_action_id
+  );
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `before_user_update` BEFORE UPDATE ON `users` FOR EACH ROW BEGIN
+  INSERT INTO corbeille (table_source, id_original, donnees, type_action, user_id)
+  VALUES (
+    'users',
+    OLD.id,
+    JSON_OBJECT(
+      'id', OLD.user_id,
+      'nom', OLD.nom,
+      'prenom', OLD.prenom,
+      'mot_de_passe', OLD.mot_de_passe,
+      'email', OLD.email,
+      'type', OLD.type,
+      'limite_retrait', OLD.limite_retrait,
+      'statut_compte', OLD.statut_compte,
+      'devise_utilisee', OLD.devise_utilisee
+    ),
+    'UPDATE',
+    @user_action_id
+  );
+END
+$$
+DELIMITER ;
 
 --
 -- Indexes for dumped tables
@@ -199,6 +295,12 @@ ALTER TABLE `comptebancaire`
   ADD PRIMARY KEY (`idCompte`);
 
 --
+-- Indexes for table `corbeille`
+--
+ALTER TABLE `corbeille`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `guichetautomatique`
 --
 ALTER TABLE `guichetautomatique`
@@ -209,6 +311,12 @@ ALTER TABLE `guichetautomatique`
 --
 ALTER TABLE `historique`
   ADD PRIMARY KEY (`idHistorique`);
+
+--
+-- Indexes for table `message`
+--
+ALTER TABLE `message`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `transaction`
@@ -230,7 +338,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `comptebancaire`
 --
 ALTER TABLE `comptebancaire`
-  MODIFY `idCompte` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idCompte` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `corbeille`
+--
+ALTER TABLE `corbeille`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `guichetautomatique`
@@ -242,7 +356,13 @@ ALTER TABLE `guichetautomatique`
 -- AUTO_INCREMENT for table `historique`
 --
 ALTER TABLE `historique`
-  MODIFY `idHistorique` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `idHistorique` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `message`
+--
+ALTER TABLE `message`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `transaction`
@@ -254,7 +374,7 @@ ALTER TABLE `transaction`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
